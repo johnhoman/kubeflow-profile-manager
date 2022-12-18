@@ -1,10 +1,11 @@
-package backend
+package apiserver
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/johnhoman/kubeflow-profile-manager/backend/access"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+
+	"github.com/johnhoman/kubeflow-profile-manager/apiserver/access"
 )
 
 type Options struct {
@@ -13,7 +14,6 @@ type Options struct {
 	UserIDHeader string
 	Admins       []string
 }
-
 
 // NewServer returns a new *gin.Engine instance with the Access Management
 // routes configured
@@ -38,6 +38,7 @@ func NewServer(cli client.Client, options Options) *gin.Engine {
 
 	grp.GET("/role/clusteradmin", mgr.ListAdmins)
 
+	grp.GET("/bindings", mgr.ReadNamespaces)
 	grp.POST("/bindings", mgr.AddContributor)
 	grp.DELETE("/bindings", mgr.RemoveContributor)
 

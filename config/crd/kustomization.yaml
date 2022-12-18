@@ -1,0 +1,3 @@
+resources:
+- bases/kubeflow.org_contributors.yaml
+- bases/kubeflow.org_profiles.yaml

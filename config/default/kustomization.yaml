@@ -1,0 +1,8 @@
+resources:
+- ../crd
+- ../istio
+- deployment.yaml
+- serviceaccount.yaml
+- service.yaml
+- role.yaml
+- rolebinding.yaml

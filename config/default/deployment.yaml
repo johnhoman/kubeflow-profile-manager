@@ -1,0 +1,65 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: profile-manager
+  namespace: kubeflow
+  labels:
+    app.kubernetes.io/part-of: kubeflow
+    app: profile-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: kubeflow
+      app: profile-manager
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/part-of: kubeflow
+        app: profile-manager
+    spec:
+      containers:
+      - command:
+        - /apiserver
+        - --cluster-admin
+        - user@example.com
+        image: jackhoman/kubeflow-profile-manager:7e6bfb1-dirty-apiserver
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /metrics
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: apiserver
+        ports:
+        - containerPort: 8081
+          name: kfam-http
+          protocol: TCP
+      - command:
+        - /controller
+        image: jackhoman/kubeflow-profile-manager:7e6bfb1-dirty-controller
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /metrics
+            port: 8082
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: manager
+        ports:
+        - containerPort: 8080
+          name: manager-http
+          protocol: TCP
+      serviceAccountName: profile-manager
