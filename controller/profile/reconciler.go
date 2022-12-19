@@ -47,6 +47,7 @@ const (
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=create;update;delete;patch;get;list;watch
 // +kubebuilder:rbac:groups=core,resources=resourcequotas,verbs=get;list;watch;patch;create;update;delete
 // +kubebuilder:rbac:groups=kubeflow.org,resources=contributors,verbs=get;list;watch
+// +kubebuilder:rbac:groups=security.istio.io,resources=authorizationpolicies,verbs=create;update;delete;patch;get;list;watch
 
 func Setup(mgr ctrl.Manager, o controller.Options, opts ...ReconcilerOption) error {
 
@@ -75,8 +76,7 @@ func Setup(mgr ctrl.Manager, o controller.Options, opts ...ReconcilerOption) err
 		)
 
 	if o.Features.Enabled(features.Istio) {
-		opts = append(opts, WithIstioEnabled(), WithNamespaceLabel("istio-injection", "true"))
-		// +kubebuilder:rbac:groups=security.istio.io,resources=authorizationpolicies,verbs=create;update;delete;patch;get;list;watch
+		opts = append(opts, WithIstioEnabled(), WithNamespaceLabel("istio-injection", "enabled"))
 		builder.Owns(&istiosecurity.AuthorizationPolicy{})
 	}
 
