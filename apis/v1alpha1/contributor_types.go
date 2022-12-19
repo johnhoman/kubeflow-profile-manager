@@ -30,10 +30,9 @@ type ContributorSpec struct {
 // ContributorStatus is the status of a contributor
 type ContributorStatus struct{}
 
+// Contributor is the Schema for the profiles API
 // +kubebuilder:object:root=true
 // +kubebuilder:subresource:status
-
-// Contributor is the Schema for the profiles API
 type Contributor struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -42,9 +41,8 @@ type Contributor struct {
 	Status ContributorStatus `json:"status,omitempty"`
 }
 
-// +kubebuilder:object:root=true
-
 // ContributorList contains a list of Contributors
+// +kubebuilder:object:root=true
 type ContributorList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

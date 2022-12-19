@@ -53,7 +53,6 @@ type ProfileStatus struct {
 // +kubebuilder:resource:path=profiles,scope=Cluster
 // +kubebuilder:printcolumn:name="OWNER",type="string",JSONPath=".spec.owner.name"
 // +kubebuilder:printcolumn:name="KIND",type="string",JSONPath=".spec.owner.kind"
-// +kubebuilder:printcolumn:name="CONTRIBUTORS",type="string",JSONPath=".status.contributors[*].name"
 
 // Profile is the Schema for the profiles API
 type Profile struct {
