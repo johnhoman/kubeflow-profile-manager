@@ -2,6 +2,5 @@ resources:
 - ../crd
 - deployment.yaml
 - serviceaccount.yaml
-- service.yaml
 - role.yaml
 - rolebinding.yaml
