@@ -67,6 +67,12 @@ rules:
   - update
   - watch
 - apiGroups:
+  - kubeflow.org
+  resources:
+  - profiles/status
+  verbs:
+  - patch
+- apiGroups:
   - rbac.authorization.k8s.io
   resources:
   - rolebindings

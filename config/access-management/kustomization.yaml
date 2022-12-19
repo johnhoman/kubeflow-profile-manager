@@ -3,7 +3,7 @@ kind: Kustomization
 images:
 - name: access-management
   newName: jackhoman/kubeflow-access-management
-  newTag: 76ca5f8-dirty
+  newTag: 4b7b118-dirty
 namespace: kubeflow-system
 
 resources:

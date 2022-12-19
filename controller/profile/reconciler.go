@@ -43,6 +43,7 @@ const (
 )
 
 // +kubebuilder:rbac:groups=kubeflow.org,resources=profiles,verbs=create;update;delete;patch;get;list;watch
+// +kubebuilder:rbac:groups=kubeflow.org,resources=profiles/status,verbs=patch
 // +kubebuilder:rbac:groups=core,resources=namespaces,verbs=create;update;delete;patch;get;list;watch
 // +kubebuilder:rbac:groups=core,resources=resourcequotas,verbs=get;list;watch;patch;create;update;delete
 // +kubebuilder:rbac:groups=kubeflow.org,resources=contributors,verbs=get;list;watch
