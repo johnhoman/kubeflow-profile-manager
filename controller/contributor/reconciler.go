@@ -30,6 +30,10 @@ const (
 
 	errFmtSetControllerRef = "failed to set controller reference on %s"
 )
+// +kubebuilder:rbac:groups=kubeflow.org,resources=contributors,verbs=create;update;delete;patch;get;list;watch
+// +kubebuilder:rbac:groups=core,resources=serviceaccounts,verbs=create;update;delete;patch;get;list;watch
+// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings,verbs=create;update;delete;get;list;patch;watch
+// +kubebuilder:rbac:groups=security.istio.io,resources=authorizationpolicies,verbs=create;update;delete;get;list;patch;watch
 
 func Setup(mgr ctrl.Manager, o controller.Options, opts ...ReconcilerOption) error {
 
@@ -43,15 +47,11 @@ func Setup(mgr ctrl.Manager, o controller.Options, opts ...ReconcilerOption) err
 	builder := ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o.ForControllerRuntime()).
-		// +kubebuilder:rbac:groups=kubeflow.org,resources=contributors,verbs=create;update;delete;patch;get;list;watch
 		For(&v1alpha1.Contributor{}).
-		// +kubebuilder:rbac:groups=core,resources=serviceaccounts,verbs=create;update;delete;patch;get;list;watch
 		Owns(&corev1.ServiceAccount{}).
-		// +kubebuilder:rbac:groups=rbac.authorization.k8s.io,resources=rolebindings,verbs="*"
 		Owns(&rbacv1.RoleBinding{})
 
 	if o.Features.Enabled(features.Istio) {
-		// +kubebuilder:rbac:groups=security.istio.io,resources=authorizationpolicies,verbs=create;update;delete;get;list;patch;watch
 		builder.Owns(&istiosecurity.AuthorizationPolicy{})
 		opts = append(opts, WithIstioEnabled())
 	}

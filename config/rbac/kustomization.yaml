@@ -1,0 +1,4 @@
+resources:
+- role.yaml
+patchesStrategicMerge:
+- role_patch.yaml

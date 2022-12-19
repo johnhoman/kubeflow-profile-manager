@@ -1,6 +1,7 @@
 namespace: kubeflow-system
 resources:
 - ../crd
+- ../rbac
 - deployment.yaml
 - serviceaccount.yaml
 - role.yaml
