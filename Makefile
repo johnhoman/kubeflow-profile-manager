@@ -2,6 +2,7 @@ GITHUB_REF_NAME ?= $(shell git describe --tags --dirty --always | sed 's/^v//g')
 
 # Image URL to use all building/pushing image targets
 IMG ?= jackhoman/kubeflow-profile-manager:$(GITHUB_REF_NAME)
+IMG_AM ?= jackhoman/kubeflow-access-management:$(GITHUB_REF_NAME)
 # ENVTEST_K8S_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
 ENVTEST_K8S_VERSION = 1.22
 
@@ -67,49 +68,42 @@ build: generate fmt vet ## Build manager binary.
 	go build -o bin/manager main.go
 
 
-EKS_OIDC_ARN ?= arn:aws:iam::111122223333:oidc-provider/oidc.eks.region-code.amazonaws.com/id/EXAMPLED539D4633E53DE1B716D3041E
-
 .PHONY: run
 run: manifests generate fmt vet ## Run a controller from your host.
 	go run ./main.go \
-		-metrics-bind-address=:8082 \
-		-enable-webhook=false \
-		-aws-region=us-east-1 \
-		-resource-default-path=smoketests \
-		-oidc-arn=$(EKS_OIDC_ARN)
+		--metrics-bind-address="0" \
+		--health-probe-bind-address="0"
 
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG}-controller --target controller .
-	docker build -t ${IMG}-apiserver --target apiserver .
+	docker build -t ${IMG} --target controller .
+
+.PHONY: docker-build-api
+docker-build-api: test ## Build docker image with the manager.
+	docker build -t ${IMG_AM} --target apiserver .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}-controller
-	docker push ${IMG}-apiserver
+	docker push ${IMG}
+
+.PHONY: docker-push-api
+docker-push-api: ## Push docker image with the manager.
+	docker push ${IMG_AM}
+
+
+.PHONY: publish-api
+publish-api:
+	cd config/access-management && kustomize edit set image access-management=${IMG_AM} && kustomize build .
+
+.PHONY: publish
+publish:
+	cd config/controller && kustomize edit set image controller=${IMG} && kustomize build .
 
 ##@ Deployment
 
 ifndef ignore-not-found
   ignore-not-found = false
 endif
-
-.PHONY: install
-install: manifests kustomize ## Install CRDs into the K8s cluster specified in ~/.kube/config.
-	$(KUSTOMIZE) build config/crd | kubectl apply -f -
-
-.PHONY: uninstall
-uninstall: manifests kustomize ## Uninstall CRDs from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/crd | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
-
-.PHONY: deploy
-deploy: manifests kustomize ## Deploy controller to the K8s cluster specified in ~/.kube/config.
-	cd config/manager && $(KUSTOMIZE) edit set image controller=${IMG}
-	$(KUSTOMIZE) build config/default | kubectl apply -f -
-
-.PHONY: undeploy
-undeploy: ## Undeploy controller from the K8s cluster specified in ~/.kube/config. Call with ignore-not-found=true to ignore resource not found errors during deletion.
-	$(KUSTOMIZE) build config/default | kubectl delete --ignore-not-found=$(ignore-not-found) -f -
 
 CONTROLLER_GEN = $(shell pwd)/bin/controller-gen
 .PHONY: controller-gen

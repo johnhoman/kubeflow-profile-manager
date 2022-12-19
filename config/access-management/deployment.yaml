@@ -1,0 +1,42 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: access-management
+  labels:
+    app.kubernetes.io/part-of: kubeflow
+    app: access-management
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: kubeflow
+      app: access-management
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/part-of: kubeflow
+        app: access-management
+    spec:
+      containers:
+      - command:
+        - /apiserver
+        image: access-management
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /metrics
+            port: 8081
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: apiserver
+        ports:
+        - containerPort: 8081
+          name: kfam-http
+          protocol: TCP
+      serviceAccountName: access-management

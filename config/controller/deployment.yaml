@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: profile-manager
-  namespace: kubeflow
+  namespace: kubeflow-system
   labels:
     app.kubernetes.io/part-of: kubeflow
     app: profile-manager
@@ -46,7 +46,6 @@ spec:
       - command:
         - /controller
         image: jackhoman/kubeflow-profile-manager:7e6bfb1-dirty-controller
-        imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
           httpGet:

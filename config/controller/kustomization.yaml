@@ -1,6 +1,5 @@
 resources:
 - ../crd
-- ../istio
 - deployment.yaml
 - serviceaccount.yaml
 - service.yaml
