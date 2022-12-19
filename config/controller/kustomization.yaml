@@ -1,3 +1,4 @@
+namespace: kubeflow-system
 resources:
 - ../crd
 - deployment.yaml

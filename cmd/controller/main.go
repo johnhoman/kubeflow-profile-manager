@@ -21,11 +21,13 @@ import (
 )
 
 var CLI struct {
-	ClusterAdmin    []string          `help:"cluster admin"`
-	UserIDHeader    string            `name:"userid-header" default:"kubeflow-userid"`
-	UserIDPrefix    string            `name:"userid-prefix"`
-	NamespaceLabels map[string]string `help:"default labels to add to namespaces"`
-	Debug           bool              `help:"enable debug logging"`
+	MetricsBindAddress     string            `default:":8080"`
+	HealthProbeBindAddress string            `default:":8081"`
+	ClusterAdmin           []string          `help:"cluster admin"`
+	UserIDHeader           string            `name:"userid-header" default:"kubeflow-userid"`
+	UserIDPrefix           string            `name:"userid-prefix"`
+	NamespaceLabels        map[string]string `help:"default labels to add to namespaces"`
+	Debug                  bool              `help:"enable debug logging"`
 
 	LeaderElect bool `name:"leader-elect" help:"enable leader election"`
 
@@ -57,10 +59,10 @@ func main() {
 	mgr, err := manager.New(config.GetConfigOrDie(), manager.Options{
 		Scheme:                 scheme.Scheme,
 		Logger:                 zapLogger,
-		LeaderElection:         true,
-		LeaderElectionID:       "manager.profile.kubeflow.org",
-		HealthProbeBindAddress: ":8080",
-		MetricsBindAddress:     ":8082",
+		LeaderElectionID:       "manager.profiles.kubeflow.org",
+		LeaderElection:         CLI.LeaderElect,
+		HealthProbeBindAddress: CLI.HealthProbeBindAddress,
+		MetricsBindAddress:     CLI.MetricsBindAddress,
 	})
 	ctx.FatalIfErrorf(err, "unable to create manager")
 
